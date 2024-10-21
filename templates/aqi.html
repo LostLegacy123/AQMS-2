@@ -8,8 +8,8 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-image: url('second_image.jpg') 
-            background-size cover;
+            background-image: url('second_image.jpg');
+            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -19,17 +19,16 @@
             padding: 10px 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center; /* Aligns items (logo and links) vertically */
+            align-items: center;
         }
         .navbar img {
-            height: 60px;  /* Set appropriate logo height */
-            width: auto;   /* Maintain aspect ratio */
+            height: 60px;
+            width: auto;
         }
-        /* Links container aligned to the right */
         .navbar-links {
             display: flex;
-            gap: 20px; /* Adds spacing between links */
-            align-items: center; /* Aligns the text with the logo */
+            gap: 20px;
+            align-items: center;
         }
         .navbar a {
             color: black;
@@ -55,37 +54,36 @@
             font-size: 36px;
         }
         canvas {
-            width: 90vw;  /* 90% of the viewport width */
-            height: 60vh; /* 60% of the viewport height */
-            max-width: 800px; /* Optional max width */
-            max-height: 500px; /* Optional max height */
+            width: 90vw;
+            height: 60vh;
+            max-width: 800px;
+            max-height: 500px;
             margin: auto;
         }
         .button {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 18px;
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
             border-radius: 5px;
         }
         .button:hover {
-            background-color: #45a049; /* Darker green */
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
     <!-- Navbar -->
     <div class="navbar">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-        <!-- Links on the right side -->
+        <img src="/static/logo.png" alt="Logo">
         <div class="navbar-links">
-            <a href="{{ url_for('index') }}">HOME</a>
-            <a href="{{ url_for('air_quality_index') }}">AQI</a>
-            <a href="{{ url_for('practice_button') }}">HEALTH INFO</a>
-            <a href="{{ url_for('user') }}"><img src="{{ url_for('static', filename='hehe.png') }}" alt="User Icon"></a>
+            <a href="/">HOME</a>
+            <a href="/aqi">AQI</a>
+            <a href="/practice-button">HEALTH INFO</a>
+            <a href="/index"><img src="/static/hehe.png" alt="User Icon"></a>
         </div>
     </div>
 
@@ -140,14 +138,14 @@
         });
 
         function sendAirQualityData(air_quality_value) {
-            fetch(`/update?air_quality=${air_quality_value}`)
+            fetch(`https://aqms-2.onrender.com/update?air_quality=${air_quality_value}`)
                 .then(response => response.json())
                 .then(data => console.log(data))
                 .catch(error => console.error('Error sending data:', error));
         }
 
         function updateGraph() {
-            fetch('/get_data')
+            fetch('https://aqms-2.onrender.com/get_data')
                 .then(response => response.json())
                 .then(data => {
                     console.log("Fetched Data:", data);
