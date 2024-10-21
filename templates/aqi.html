@@ -137,13 +137,19 @@
             }
         });
 
-        function sendAirQualityData(air_quality_value) {
-            fetch(`/add_data?air_quality=${air_quality_value}`)
-                body: JSON.stringify({ airQuality: air_quality_value })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(error => console.error('Error sending data:', error));
-        }
+       function sendAirQualityData(air_quality_value) {
+    fetch('/add_data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ airQuality: air_quality_value })
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error sending data:', error));
+}
+
 
         function updateGraph() {
             fetch('/get_data')
