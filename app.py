@@ -12,7 +12,7 @@ max_data_points = 10  # Maximum number of data points to store
 users = {}
 
 @app.route('/')
-def index():
+def user():
     return render_template('user.html')
 
 @app.route('/aqi')
@@ -20,7 +20,7 @@ def air_quality_index():
     return render_template('aqi.html', data=data)
 
 @app.route('/index')
-def user():
+def index():
     return render_template('index.html')
 
 @app.route('/practice-button')
