@@ -145,7 +145,7 @@
         }
 
         function updateGraph() {
-            fetch('https://aqms-2.onrender.com/get_data')
+            fetch('/get_data')
                 .then(response => response.json())
                 .then(data => {
                     console.log("Fetched Data:", data);
