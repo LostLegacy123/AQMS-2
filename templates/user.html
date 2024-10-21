@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Monitoring System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(to right, #8ccfd9, #f0f4c3); /* Light blue and light green gradient */
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #4caf50; /* Clean air, environment tone */
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        /* Form Container */
+        .form-container {
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .form-inner {
+            margin-top: 20px;
+        }
+
+        #form-title {
+            font-size: 1.8em;
+            color: #4caf50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-size: 1em;
+            font-weight: 400;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="password"]:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 4px rgba(76, 175, 80, 0.5);
+        }
+
+        /* Password Toggle */
+        .password-wrapper {
+            position: relative;
+        }
+
+        #toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+        }
+
+        #toggle-password:hover {
+            color: #4caf50;
+        }
+
+        /* Submit Button */
+        #submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Toggle Link */
+        #toggle-link {
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        #toggle-link a {
+            color: #4caf50;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #toggle-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Error Message */
+        #error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Air Quality Monitoring System</h1>
+        </header>
+        <div class="form-container">
+            <div class="form-inner">
+                <h2 id="form-title">Login</h2>
+                <form id="auth-form">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" placeholder="Enter your username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" placeholder="Enter your password" required>
+                            <button type="button" id="toggle-password" aria-label="Show Password" title="Show Password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" id="submit-btn">Login</button>
+                    <p id="toggle-link">Don't have an account? <a id="register-link">Register</a></p>
+                    <p id="error-message"></p> <!-- Error message element -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to toggle between login and register forms
+        function toggleForm() {
+            const formTitle = document.getElementById('form-title');
+            const submitButton = document.getElementById('submit-btn');
+            const toggleLink = document.getElementById('toggle-link');
+
+            if (formTitle.textContent === 'Login') {
+                formTitle.textContent = 'Register';
+                submitButton.textContent = 'Register';
+                toggleLink.innerHTML = 'Already have an account? <a id="login-link">Login</a>';
+            } else {
+                formTitle.textContent = 'Login';
+                submitButton.textContent = 'Login';
+                toggleLink.innerHTML = "Don't have an account? <a id='register-link'>Register</a>";
+            }
+        }
+
+        // Add event listener to toggle the form
+        document.getElementById('toggle-link').addEventListener('click', toggleForm);
+
+        // Handle form submission
+        document.getElementById('auth-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const formTitle = document.getElementById('form-title').textContent;
+
+            const url = formTitle === 'Login' ? '/login' : '/register'; // Choose URL based on form type
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    // Redirect to index.html if login or registration is successful
+                    window.location.href = '/index';
+                } else {
+                    // Display error message
+                    document.getElementById('error-message').textContent = result.message;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('error-message').textContent = 'An error occurred. Please try again.';
+            });
+        });
+
+        // Password visibility toggle
+        document.getElementById('toggle-password').addEventListener('click', function() {
+            const passwordField = document.getElementById('password');
+            const icon = this.querySelector('i');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    </script>
+</body>
+</html>

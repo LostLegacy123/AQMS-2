@@ -1,0 +1,66 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // Sample registered users
+    const registeredUsers = [
+        { username: 'user1', password: 'password1' },
+        { username: 'user2', password: 'password2' }
+    ];
+
+    const form = document.getElementById('auth-form');
+    const formTitle = document.getElementById('form-title');
+    const registerLink = document.getElementById('register-link');
+    const submitButton = document.getElementById('submit-btn');
+    const togglePasswordButton = document.getElementById('toggle-password');
+    const passwordField = document.getElementById('password');
+    
+    let isPasswordVisible = false;
+
+    registerLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        formTitle.textContent = 'Register';
+        submitButton.textContent = 'Register';
+        submitButton.removeEventListener('click', handleLogin);
+        submitButton.addEventListener('click', handleRegister);
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        if (formTitle.textContent === 'Login') {
+            handleLogin(username, password);
+        } else {
+            handleRegister(username, password);
+        }
+    });
+
+    function handleLogin(username, password) {
+        const user = registeredUsers.find(user => user.username === username && user.password === password);
+        if (user) {
+            alert('Login successful!');
+            // Redirect to index.html
+            window.location.href = 'index.html';
+        } else {
+            alert('Invalid username or password');
+        }
+    }
+
+    function handleRegister(username, password) {
+        if (username && password) {
+            registeredUsers.push({ username, password });
+            alert('Registration successful!');
+            formTitle.textContent = 'Login';
+            submitButton.textContent = 'Login';
+            submitButton.removeEventListener('click', handleRegister);
+            submitButton.addEventListener('click', handleLogin);
+        } else {
+            alert('Please fill in all fields');
+        }
+    }
+
+    togglePasswordButton.addEventListener('click', () => {
+        isPasswordVisible = !isPasswordVisible;
+        passwordField.type = isPasswordVisible ? 'text' : 'password';
+        togglePasswordButton.innerHTML = isPasswordVisible ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    });
+});

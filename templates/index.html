@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Monitoring System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('background-image.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: black;
+        }
+
+        header {
+            background-color: #d5e8d4;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header img {
+            height: 50px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 10;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        nav ul li {
+            display: inline;
+            align-items: center;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            color: #8d6a21;
+        }
+
+        .content {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .content h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content p {
+            font-size: 1.2em;
+            margin-top: 5px;
+        }
+
+        /* Lowered the social media section */
+        .social-media {
+            margin-top: 100px; /* Increased margin to push the social media links lower */
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-media a {
+            color: black;
+            font-size: 1.2em;
+            text-decoration: none;
+            padding: 5px;
+        }
+
+        .social-media a:hover {
+            color: #8d6a21;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">HOME</a></li>
+                <li><a href="{{ url_for('air_quality_index') }}">AQI</a></li>
+                <li><a href="{{ url_for('practice_button') }}">HEALTH INFO</a></li>
+                <li><a href="{{ url_for('user') }}"><img src="{{ url_for('static', filename='hehe.png') }}" alt="User Icon"></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="content">
+        <h1>Air Quality Monitoring System</h1>
+        <p>Better Air for a Better Life</p>
+        <div class="social-media">
+            <a href="https://www.instagram.com" target="_blank" title="Instagram">
+                <i class="fa fa-instagram"></i> Instagram
+            </a>
+            <a href="https://www.facebook.com" target="_blank" title="Facebook">
+                <i class="fa fa-facebook"></i> Facebook
+            </a>
+            <a href="https://www.twitter.com" target="_blank" title="Twitter">
+                <i class="fa fa-twitter"></i> Twitter
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

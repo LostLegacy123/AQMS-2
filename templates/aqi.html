@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Graph</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('second_image.jpg') 
+            background-size cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        /* Navbar Styling */
+        .navbar {
+            background-color: #b8c4a3;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Aligns items (logo and links) vertically */
+        }
+        .navbar img {
+            height: 60px;  /* Set appropriate logo height */
+            width: auto;   /* Maintain aspect ratio */
+        }
+        /* Links container aligned to the right */
+        .navbar-links {
+            display: flex;
+            gap: 20px; /* Adds spacing between links */
+            align-items: center; /* Aligns the text with the logo */
+        }
+        .navbar a {
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+        .navbar a:hover {
+            color: brown;
+        }
+        .user-icon img {
+            width: 30px;
+            height: auto;
+        }
+        /* Content Styling */
+        .content {
+            text-align: center;
+            color: black;
+            margin-top: 5%;
+        }
+        .content h1 {
+            font-size: 36px;
+        }
+        canvas {
+            width: 90vw;  /* 90% of the viewport width */
+            height: 60vh; /* 60% of the viewport height */
+            max-width: 800px; /* Optional max width */
+            max-height: 500px; /* Optional max height */
+            margin: auto;
+        }
+        .button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #45a049; /* Darker green */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        <!-- Links on the right side -->
+        <div class="navbar-links">
+            <a href="{{ url_for('index') }}">HOME</a>
+            <a href="{{ url_for('air_quality_index') }}">AQI</a>
+            <a href="{{ url_for('practice_button') }}">HEALTH INFO</a>
+            <a href="{{ url_for('user') }}"><img src="{{ url_for('static', filename='hehe.png') }}" alt="User Icon"></a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>AIR QUALITY GRAPH</h1>
+        <canvas id="airQualityGraph"></canvas>
+        <!-- Button to simulate sending air quality data -->
+        <button class="button" id="sendDataButton">Send Sample Air Quality Data</button>
+    </div>
+
+    <!-- Load Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add the date adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+    <script>
+        const ctx = document.getElementById('airQualityGraph').getContext('2d');
+        const airQualityGraph = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],  // Timestamps
+                datasets: [{
+                    label: 'Air Quality',
+                    data: [],  // Air quality values
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Air Quality (Analog Value)'
+                        }
+                    }
+                }
+            }
+        });
+
+        function sendAirQualityData(air_quality_value) {
+            fetch(`/update?air_quality=${air_quality_value}`)
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error sending data:', error));
+        }
+
+        function updateGraph() {
+            fetch('/get_data')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Fetched Data:", data);
+
+                    // Check if there is data to display
+                    if (data.length === 0) {
+                        // Clear the graph
+                        airQualityGraph.data.labels = [];
+                        airQualityGraph.data.datasets[0].data = [];
+                        airQualityGraph.update();  // Update the graph to reflect the changes
+                        return;  // Exit if there's no data
+                    }
+
+                    // Update labels and values
+                    const labels = data.map(entry => entry.time);
+                    const values = data.map(entry => entry.value);
+                    airQualityGraph.data.labels = labels;
+                    airQualityGraph.data.datasets[0].data = values;
+                    airQualityGraph.update();
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Button click event to send sample data
+        document.getElementById('sendDataButton').addEventListener('click', function() {
+            const sampleValue = Math.floor(Math.random() * 100);  // Replace this with your actual air quality reading
+            sendAirQualityData(sampleValue);
+        });
+
+        setInterval(updateGraph, 5000);  // Update graph every 5 seconds
+    </script>
+</body>
+</html>
