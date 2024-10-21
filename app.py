@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, jsonify
-import time
+from datetime import datetime
 import hashlib
 import json
 import os
+import pytz
 
 app = Flask(__name__)
 
@@ -12,6 +13,9 @@ max_data_points = 10  # Maximum number of data points to store
 
 # File path for storing user data
 user_file_path = 'users.json'
+
+# Timezone configuration (set to your local timezone)
+local_tz = pytz.timezone('Asia/Manila')
 
 # Load users from JSON file if it exists
 def load_users():
@@ -44,14 +48,22 @@ def index():
 def practice_button():
     return render_template('practice button.html')
 
+# Add data to air quality chart with correct timestamp
 @app.route('/add_data', methods=['POST'])
 def add_data():
     air_quality = request.json.get('airQuality')
     if air_quality is not None:
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+        # Get the current time with timezone awareness
+        current_time = datetime.now(local_tz)
+        timestamp = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+        # Append the data with the correct timestamp
         data.append({'time': timestamp, 'value': int(air_quality)})
+
+        # Limit the number of data points stored
         if len(data) > max_data_points:
             data.pop(0)
+
         print(f"New data added: {data[-1]}")
         return jsonify({'status': 'success', 'data': data}), 200
     else:
