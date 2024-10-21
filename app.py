@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import time
 import hashlib
+import json
+import os
 
 app = Flask(__name__)
 
@@ -8,8 +10,23 @@ app = Flask(__name__)
 data = []
 max_data_points = 10  # Maximum number of data points to store
 
-# In-memory user store (should be replaced with a database in production)
-users = {}
+# File path for storing user data
+user_file_path = 'users.json'
+
+# Load users from JSON file if it exists
+def load_users():
+    if os.path.exists(user_file_path):
+        with open(user_file_path, 'r') as f:
+            return json.load(f)
+    return {}
+
+# Save users to JSON file
+def save_users(users):
+    with open(user_file_path, 'w') as f:
+        json.dump(users, f, indent=4)
+
+# Initialize the user dictionary from the JSON file
+users = load_users()
 
 @app.route('/')
 def user():
@@ -60,6 +77,9 @@ def register():
 
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
     users[username] = hashed_password
+
+    # Save users to the JSON file
+    save_users(users)
 
     return jsonify({'status': 'success', 'message': 'User registered successfully'}), 200
 
