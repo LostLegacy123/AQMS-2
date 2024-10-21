@@ -138,7 +138,7 @@
         });
 
         function sendAirQualityData(air_quality_value) {
-            fetch(`https://aqms-2.onrender.com/update?air_quality=${air_quality_value}`)
+            fetch(`/update?air_quality=${air_quality_value}`)
                 .then(response => response.json())
                 .then(data => console.log(data))
                 .catch(error => console.error('Error sending data:', error));
