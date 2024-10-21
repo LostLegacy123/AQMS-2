@@ -13,7 +13,6 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-        /* Navbar Styling */
         .navbar {
             background-color: #b8c4a3;
             padding: 10px 20px;
@@ -44,7 +43,6 @@
             width: 30px;
             height: auto;
         }
-        /* Content Styling */
         .content {
             text-align: center;
             color: black;
@@ -119,7 +117,13 @@
                     x: {
                         type: 'time',
                         time: {
-                            unit: 'minute'
+                            unit: 'minute',
+                            tooltipFormat: 'yyyy-MM-dd HH:mm:ss',  // Ensure the format matches backend
+                            displayFormats: {
+                                minute: 'HH:mm',
+                                hour: 'HH:mm',
+                                day: 'MMM d'
+                            }
                         },
                         title: {
                             display: true,
@@ -137,49 +141,49 @@
             }
         });
 
-       function sendAirQualityData(air_quality_value) {
-    fetch('/add_data', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ airQuality: air_quality_value })
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error sending data:', error));
-}
+        // Send air quality data to backend
+        function sendAirQualityData(air_quality_value) {
+            fetch('/add_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ airQuality: air_quality_value })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error sending data:', error));
+        }
 
-
+        // Update the graph with the latest data
         function updateGraph() {
             fetch('/get_data')
                 .then(response => response.json())
                 .then(data => {
                     console.log("Fetched Data:", data);
 
-                    // Check if there is data to display
+                    // Clear graph if no data
                     if (data.length === 0) {
-                        // Clear the graph
                         airQualityGraph.data.labels = [];
                         airQualityGraph.data.datasets[0].data = [];
-                        airQualityGraph.update();  // Update the graph to reflect the changes
-                        return;  // Exit if there's no data
+                        airQualityGraph.update();
+                        return;
                     }
 
-                    // Update labels and values
-                    const labels = data.map(entry => entry.time);
+                    // Convert the timestamps to Date objects
+                    const labels = data.map(entry => new Date(entry.time));
                     const values = data.map(entry => entry.value);
+
                     airQualityGraph.data.labels = labels;
                     airQualityGraph.data.datasets[0].data = values;
                     airQualityGraph.update();
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
-        
 
         // Button click event to send sample data
         document.getElementById('sendDataButton').addEventListener('click', function() {
-            const sampleValue = Math.floor(Math.random() * 100);  // Replace this with your actual air quality reading
+            const sampleValue = Math.floor(Math.random() * 100);
             sendAirQualityData(sampleValue);
         });
 
