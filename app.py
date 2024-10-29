@@ -29,8 +29,21 @@ def save_users(users):
     with open(user_file_path, 'w') as f:
         json.dump(users, f, indent=4)
 
+# Initialize the admin user if not present
+def initialize_admin_user():
+    admin_username = "admin"
+    admin_password_hash = hashlib.sha256("admin".encode()).hexdigest()
+    if admin_username not in users:
+        users[admin_username] = {
+            "password": admin_password_hash,
+            "role": "admin",
+            "is_active": True
+        }
+        save_users(users)
+
 # Initialize the user dictionary from the JSON file
 users = load_users()
+initialize_admin_user()
 
 @app.route('/')
 def user():
@@ -88,7 +101,11 @@ def register():
         return jsonify({'status': 'failed', 'message': 'User already exists'}), 400
 
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    users[username] = hashed_password
+    users[username] = {
+        "password": hashed_password,
+        "role": "user",
+        "is_active": True
+    }
 
     # Save users to the JSON file
     save_users(users)
@@ -104,9 +121,9 @@ def login():
         return jsonify({'status': 'failed', 'message': 'Username and password required'}), 400
 
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    stored_password = users.get(username)
+    user = users.get(username)
 
-    if stored_password and stored_password == hashed_password:
+    if user and user["password"] == hashed_password:
         return jsonify({'status': 'success', 'message': 'Login successful'}), 200
     else:
         return jsonify({'status': 'failed', 'message': 'Invalid credentials'}), 401
