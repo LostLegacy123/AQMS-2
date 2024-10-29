@@ -81,7 +81,7 @@
             <a href="/index">HOME</a>
             <a href="/aqi">AQI</a>
             <a href="/practice-button">HEALTH INFO</a>
-            <a href="/"><img src="/static/hehe.png" alt="User Icon"></a>
+            <a href="/"><img src="/static/logo2.png" alt="User Icon"></a>
         </div>
     </div>
 
@@ -109,7 +109,20 @@
                     data: [],  // Air quality values
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1,
-                    fill: false
+                    fill: false,
+                    pointBackgroundColor: function(context) {
+                        const value = context.raw;
+                        if (value <= 50) {
+                            return 'green';
+                        } else if (value <= 100) {
+                            return 'yellow';
+                        } else if (value <= 150) {
+                            return 'orange';
+                        } else {
+                            return 'red';
+                        }
+                    },
+                    pointRadius: 5 // Increase radius for better visibility
                 }]
             },
             options: {
@@ -118,7 +131,7 @@
                         type: 'time',
                         time: {
                             unit: 'minute',
-                            tooltipFormat: 'yyyy-MM-dd HH:mm:ss',  // Ensure the format matches backend
+                            tooltipFormat: 'yyyy-MM-dd HH:mm:ss',
                             displayFormats: {
                                 minute: 'HH:mm',
                                 hour: 'HH:mm',
@@ -183,7 +196,7 @@
 
         // Button click event to send sample data
         document.getElementById('sendDataButton').addEventListener('click', function() {
-            const sampleValue = Math.floor(Math.random() * 100);
+            const sampleValue = Math.floor(Math.random() * 200); // Sample value up to 200 for testing
             sendAirQualityData(sampleValue);
         });
 
