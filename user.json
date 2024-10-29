@@ -1,0 +1,15 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "8c6976e5b5410415bde908bd4dee15dfb16a9d88",  // SHA-256 for "admin"
+      "role": "admin",
+      "email": "admin@example.com",
+      "created_at": "2024-10-29T10:30:00Z",
+      "last_login": "2024-10-29T10:30:00Z",
+      "is_active": true
+    }
+    // other users
+  ]
+}
