@@ -59,7 +59,7 @@
             margin: auto;
         }
         .button {
-            margin-top: 20px;
+            margin: 10px;
             padding: 10px 20px;
             font-size: 18px;
             background-color: #4CAF50;
@@ -71,10 +71,29 @@
         .button:hover {
             background-color: #45a049;
         }
+        .legend {
+            margin-top: 20px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .legend span {
+            margin: 0 10px;
+        }
+        .legend span::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .legend .green::before { background-color: green; }
+        .legend .yellow::before { background-color: yellow; }
+        .legend .orange::before { background-color: orange; }
+        .legend .red::before { background-color: red; }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <div class="navbar">
         <img src="/static/logo2.png" alt="Logo">
         <div class="navbar-links">
@@ -85,18 +104,26 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="content">
         <h1>AIR QUALITY GRAPH</h1>
         <canvas id="airQualityGraph"></canvas>
-        <!-- Button to simulate sending air quality data -->
-        <button class="button" id="sendDataButton">Send Sample Air Quality Data</button>
+        <div>
+            <button class="button" id="sendDataButton">Send Sample Air Quality Data</button>
+            <button class="button" id="exportExcel">Export to Excel</button>
+            <button class="button" id="exportPDF">Export to PDF</button>
+        </div>
+        <div class="legend">
+            <span class="green">Good (<=50)</span>
+            <span class="yellow">Moderate (51-100)</span>
+            <span class="orange">Unhealthy (101-150)</span>
+            <span class="red">Very Unhealthy (>150)</span>
+        </div>
     </div>
 
-    <!-- Load Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Add the date adapter -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
     <script>
         const ctx = document.getElementById('airQualityGraph').getContext('2d');
@@ -106,23 +133,15 @@
                 labels: [],  // Timestamps
                 datasets: [{
                     label: 'Air Quality',
-                    data: [],  // Air quality values
+                    data: [],
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1,
                     fill: false,
                     pointBackgroundColor: function(context) {
                         const value = context.raw;
-                        if (value <= 50) {
-                            return 'green';
-                        } else if (value <= 100) {
-                            return 'yellow';
-                        } else if (value <= 150) {
-                            return 'orange';
-                        } else {
-                            return 'red';
-                        }
+                        return value <= 50 ? 'green' : value <= 100 ? 'yellow' : value <= 150 ? 'orange' : 'red';
                     },
-                    pointRadius: 5 // Increase radius for better visibility
+                    pointRadius: 5
                 }]
             },
             options: {
@@ -138,52 +157,31 @@
                                 day: 'MMM d'
                             }
                         },
-                        title: {
-                            display: true,
-                            text: 'Time'
-                        }
+                        title: { display: true, text: 'Time' }
                     },
                     y: {
                         beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Air Quality (Analog Value)'
-                        }
+                        title: { display: true, text: 'Air Quality (Analog Value)' }
                     }
                 }
             }
         });
 
-        // Send air quality data to backend
-        function sendAirQualityData(air_quality_value) {
+        function sendAirQualityData(value) {
             fetch('/add_data', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ airQuality: air_quality_value })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ airQuality: value })
             })
             .then(response => response.json())
             .then(data => console.log(data))
             .catch(error => console.error('Error sending data:', error));
         }
 
-        // Update the graph with the latest data
         function updateGraph() {
             fetch('/get_data')
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Fetched Data:", data);
-
-                    // Clear graph if no data
-                    if (data.length === 0) {
-                        airQualityGraph.data.labels = [];
-                        airQualityGraph.data.datasets[0].data = [];
-                        airQualityGraph.update();
-                        return;
-                    }
-
-                    // Convert the timestamps to Date objects
                     const labels = data.map(entry => new Date(entry.time));
                     const values = data.map(entry => entry.value);
 
@@ -194,13 +192,32 @@
                 .catch(error => console.error('Error fetching data:', error));
         }
 
-        // Button click event to send sample data
-        document.getElementById('sendDataButton').addEventListener('click', function() {
-            const sampleValue = Math.floor(Math.random() * 200); // Sample value up to 200 for testing
+        document.getElementById('sendDataButton').addEventListener('click', () => {
+            const sampleValue = Math.floor(Math.random() * 200);
             sendAirQualityData(sampleValue);
         });
 
-        setInterval(updateGraph, 5000);  // Update graph every 5 seconds
+        document.getElementById('exportExcel').addEventListener('click', () => {
+            const data = airQualityGraph.data.labels.map((label, i) => ({
+                Time: label.toISOString(),
+                Value: airQualityGraph.data.datasets[0].data[i]
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'AirQuality');
+            XLSX.writeFile(workbook, 'AirQualityData.xlsx');
+        });
+
+        document.getElementById('exportPDF').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            pdf.text('Air Quality Graph', 10, 10);
+            pdf.addImage(airQualityGraph.toBase64Image(), 'JPEG', 10, 20, 180, 100);
+            pdf.save('AirQualityGraph.pdf');
+        });
+
+        setInterval(updateGraph, 5000);
     </script>
 </body>
 </html>
