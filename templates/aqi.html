@@ -51,6 +51,14 @@
         .content h1 {
             font-size: 36px;
         }
+        .graph-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .graph-container .chart-wrapper {
+            position: relative;
+        }
         canvas {
             width: 90vw;
             height: 60vh;
@@ -72,12 +80,19 @@
             background-color: #45a049;
         }
         .legend {
-            margin-top: 20px;
-            font-size: 16px;
-            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
         }
         .legend span {
-            margin: 0 10px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 16px;
         }
         .legend span::before {
             content: '';
@@ -106,17 +121,21 @@
 
     <div class="content">
         <h1>AIR QUALITY GRAPH</h1>
-        <canvas id="airQualityGraph"></canvas>
+        <div class="graph-container">
+            <div class="chart-wrapper">
+                <canvas id="airQualityGraph"></canvas>
+                <div class="legend">
+                    <span class="green">Good (<=50)</span>
+                    <span class="yellow">Moderate (51-100)</span>
+                    <span class="orange">Unhealthy (101-150)</span>
+                    <span class="red">Very Unhealthy (>150)</span>
+                </div>
+            </div>
+        </div>
         <div>
             <button class="button" id="sendDataButton">Send Sample Air Quality Data</button>
             <button class="button" id="exportExcel">Export to Excel</button>
             <button class="button" id="exportPDF">Export to PDF</button>
-        </div>
-        <div class="legend">
-            <span class="green">Good (<=50)</span>
-            <span class="yellow">Moderate (51-100)</span>
-            <span class="orange">Unhealthy (101-150)</span>
-            <span class="red">Very Unhealthy (>150)</span>
         </div>
     </div>
 
@@ -145,6 +164,7 @@
                 }]
             },
             options: {
+                responsive: true,
                 scales: {
                     x: {
                         type: 'time',
@@ -162,6 +182,11 @@
                     y: {
                         beginAtZero: true,
                         title: { display: true, text: 'Air Quality (Analog Value)' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Hide the default legend
                     }
                 }
             }
@@ -217,7 +242,7 @@
             pdf.save('AirQualityGraph.pdf');
         });
 
-        setInterval(updateGraph, 5000);
+        setInterval(updateGraph, 5000);  // Update graph every 5 seconds
     </script>
 </body>
 </html>
